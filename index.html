@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta content="stuff, to, help, search, engines, not" name="keywords">
+<meta content="What this page is about." name="description">
+<meta content="Display Webcam Stream" name="title">
+<title>Display Webcam Stream</title>
+
+</head>
+  
+<body>
+  <canvas id="canvas"></canvas>
+  <video id="video" width="320" height="240" autoplay></video>
+<button id="click-photo">click-photo</button>
+
+  <button id="open_camera">Open camera</button>
+
+  <div class="row">
+    <div class="col-md-12">
+      <img src="" alt="" id="img" width="200" height="200" style="display: none">
+      
+    
+        <input type="hidden" id="images" name="images" value="">
+        <input type="hidden" id="camera_image" name="camera_image" value="">
+
+    </div>
+
+
+</div>
+
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+
+
+    <script>
+let camera_button = document.querySelector("#start-camera");
+let video = document.querySelector("#video");
+let snap = document.querySelector("#click-photo");
+let canvas = document.querySelector("#canvas");
+let img = $("#img");
+let imgs = $("#camera_image");
+
+
+
+var tracks;
+const constraints = {
+  audio: false,
+  video: {
+    width: {
+      // min: 1024,
+      ideal: canvas.width,
+      // max: 1920,
+    },
+    height: {
+      // min: 576,
+      ideal: canvas.height,
+      // max: 1080,
+    },
+  }
+}
+
+async function startWebCam() {
+  try {
+    //getUserMedia() returns Promise
+    const stream = await navigator.mediaDevices.getUserMedia(constraints);
+    video.srcObject = stream;
+    tracks = stream;
+  }
+  catch (e) {
+    console.log(e.toString());
+  }
+}
+
+var context = canvas.getContext('2d');
+
+snap.addEventListener('click', () => {
+  // const stream = await navigator.mediaDevices.getUserMedia(constraints);
+  context.drawImage(video, 0, 0, canvas.width, canvas.height);
+  img.attr('src',canvas.toDataURL('image/jpeg'))
+  img.css('display','block')
+  imgs.val(canvas.toDataURL('image/jpeg'))
+  $('#camera_modal').css('display','none')
+  tracks.getTracks().forEach((track) => {
+    track.stop();
+  })
+  video.srcObject=null
+});
+
+$('#open_camera').click(function(){
+    $('#camera_modal').css('display','block')
+    startWebCam()
+})
+$('#close').click(function(){
+    $('#camera_modal').css('display','none')
+})
+</script>
+</body>
+</html>
